@@ -1,11 +1,5 @@
-script(src="/socket.io/socket.io.js")
-script
-  window.onload = function () {
-    io.connect('/main')
-      .on('total', function (total) {
-        document.getElementById('count').innerHTML = total;
-      })
-  }
+link(href="/css/index.css", rel="stylesheet")
+script(src="/js/index.js")
 
 p Welcome to the LearnBoost redirection service!
 p <b id="count">#{count}</b> urls generated so far!

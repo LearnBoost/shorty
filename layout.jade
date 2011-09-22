@@ -2,6 +2,9 @@ doctype 5
 html
   head
     title Shorty
+    script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js")
+    script(src="/socket.io/socket.io.js")
+    script(src="/js/animation.js")
     :stylus
       body
         padding 20px 100px
@@ -14,46 +17,6 @@ html
           padding-right 30px
       h2
         color #444
-      .creation-stats, .visited-stats
-        width 460px
-        height 500px
-        float left
-        margin-right 20px
-        padding-right 20px
-        overflow auto
-        h3
-          color #3B88D8
-          margin-top 0
-      .creation-stats
-        border-right 1px solid #ccc
-      .stat
-        padding 5px 10px 7px
-        background #fafafa
-        overflow hidden
-        div
-          font-size 11px
-          display inline-block
-        a
-          color #444
-          text-decoration none
-          &:hover
-            text-decoration underline
-        .type
-          font-weight bold
-          text-transform uppercase
-          width 100px
-        .date
-          color #999
-          width 80px
-        .short
-          width 40px
-        .url
-          width 220px
-          overflow hidden
-          height 15px
-          line-height 15px
-        &:nth-child(odd)
-          background #eee
   body
     h1: span Shorty
     #wrap!= body

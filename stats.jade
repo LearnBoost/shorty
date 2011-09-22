@@ -1,32 +1,6 @@
-
-script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js")
-script(src="/socket.io/socket.io.js")
+link(href="/css/stats.css", rel="stylesheet")
 script(src="/js/date.js")
-script
-  window.onload = function () {
-    function created (short, long, d, manual) {
-      var p = $('.creation-stats .stats');
-      var t = template('url created', { short: short, url: long, date: d }).prependTo(p);
-    }
-    function visited (short, long, d, manual) {
-      var p = $('.visited-stats .stats');
-      var t = template('url visited', { short: short, url: long, date: d }).prependTo(p);
-    }
-
-    io.connect('/stats')
-      .on('url created', created)
-      .on('url visited', visited)
-
-    for (var i = 0, l = transactions.length; i < l; i++) {
-      var t = transactions[i];
-      if ('url created' == t.type) {
-        created(t.short, t.parsed, t.date);
-      } else {
-        visited(t.short, t.parsed, t.date);
-      }
-    }
-  }
-script
+script(src="/js/stats.js")
 
 h2 Real-time stats
 
