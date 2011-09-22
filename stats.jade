@@ -1,0 +1,57 @@
+
+script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js")
+script(src="/socket.io/socket.io.js")
+script(src="/js/date.js")
+script
+  window.onload = function () {
+    function created (short, long, d, manual) {
+      var p = $('.creation-stats .stats');
+      var t = template('url created', { short: short, url: long, date: d }).prependTo(p);
+    }
+    function visited (short, long, d, manual) {
+      var p = $('.visited-stats .stats');
+      var t = template('url visited', { short: short, url: long, date: d }).prependTo(p);
+    }
+
+    io.connect('/stats')
+      .on('url created', created)
+      .on('url visited', visited)
+
+    for (var i = 0, l = transactions.length; i < l; i++) {
+      var t = transactions[i];
+      if ('url created' == t.type) {
+        created(t.short, t.parsed, t.date);
+      } else {
+        visited(t.short, t.parsed, t.date);
+      }
+    }
+  }
+script
+
+h2 Real-time stats
+
+.creation-stats
+  h3 Creations
+  .stats
+
+.visited-stats
+  h3 Visits
+  .stats
+
+template(id="url created"):
+  .stat.creation
+    .type URL Created
+    .date= prettyDate(date)
+    .short <a href="/#{short}">/#{short}</a>
+    .url <a href="#{url.href}"><em>#{url.hostname}</em><b>#{url.pathname}</b></a>
+
+template(id="url visited"):
+  .stat.visited
+    .type URL visited
+    .date= prettyDate(date)
+    .short <a href="/#{short}">/#{short}</a>
+    .url <a href="#{url.href}"><em>#{url.hostname}</em><b>#{url.pathname}</b></a>
+
+- var transactions = JSON.stringify(transactions)
+script
+  var transactions = !{transactions}
