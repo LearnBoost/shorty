@@ -1,4 +1,3 @@
-
 # Shorty
 
 Shorty is LearnBoost's URL shortening/redirection service.
@@ -10,10 +9,8 @@ Shorty is LearnBoost's URL shortening/redirection service.
 - At production use on https://lrn.bt
 - Uses express, jade, stylus. Easy to hack on!
 - Realtime stats with [socket.io](http://socket.io)
- - **/**
- ![](http://f.cl.ly/items/2h2k1p1b2E1I2y0N0Y3u/Image%202011.09.21%208:49:42%20PM.png)
- - **/stats**
- ![](http://f.cl.ly/items/072u3V453Q2X0p44180J/Image%202011.09.21%208:16:26%20PM.png)
+    ![](http://f.cl.ly/items/2h2k1p1b2E1I2y0N0Y3u/Image%202011.09.21%208:49:42%20PM.png) 
+    ![](http://f.cl.ly/items/072u3V453Q2X0p44180J/Image%202011.09.21%208:16:26%20PM.png)
 
 ## API
 
