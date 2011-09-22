@@ -9,6 +9,7 @@ var express = require('express')
   , fs = require('fs')
   , base60 = require('./base60')
   , url = require('url')
+  , nib = require('nib')
   , jadevu = require('jadevu')
 
 /**
