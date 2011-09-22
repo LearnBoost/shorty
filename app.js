@@ -88,6 +88,7 @@ module.exports = (function (port, secure) {
   app.configure(function () {
     app.set('views', __dirname);
     app.set('view engine', 'jade');
+    app.set('domain', process.env.SHORTY_DOMAIN || 'lrn.bt');
   });
 
   /**
@@ -201,7 +202,7 @@ module.exports = (function (port, secure) {
             obj.parsed = parsed;
             io.of('/main').volatile.emit('total', length + 1);
             io.of('/stats').volatile.emit('url created', short, parsed, Date.now());
-            req.res.send({ short: short });
+            req.res.send({ short: 'https://' + app.set('domain') + '/' + short });
 
             // check if there's another link to process
             var next = queue.shift();
