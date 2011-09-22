@@ -12,7 +12,7 @@ Shorty is LearnBoost's URL shortening/redirection service.
     ![](http://f.cl.ly/items/2h2k1p1b2E1I2y0N0Y3u/Image%202011.09.21%208:49:42%20PM.png) 
     ![](http://f.cl.ly/items/072u3V453Q2X0p44180J/Image%202011.09.21%208:16:26%20PM.png)
 
-## API
+## Client API
 
 Post to `/create` with the `url` field to create.
 
@@ -21,6 +21,11 @@ body (`error` key)
 - If a problem saving the URL occurs, a status `500` is returned.
 - If the url is created, status `200` is returned with JSON body (`short` key)
 - If the url already exists, same response as creation is returned.
+
+## Config
+
+To set the short URL to include in JSON responses set the env var
+`SHORTY_DOMAIN` to your hostname (e.g.: `lrn.bt`)
 
 ## Credits
 
