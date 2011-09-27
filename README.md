@@ -27,6 +27,14 @@ body (`error` key)
 To set the short URL to include in JSON responses set the env var
 `SHORTY_DOMAIN` to your hostname (e.g.: `lrn.bt`)
 
+## Examples
+
+Using `curl`:
+
+``` shell
+curl -d "url=http://www.learnboost.com" https://lrn.bt/create
+```
+
 ## Credits
 
 (The MIT License)
