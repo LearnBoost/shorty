@@ -146,6 +146,10 @@ module.exports = (function (port, secure) {
    */
 
   function validate (req, res, next) {
+    if (!req.body || !req.body.url) {
+      return res.json({ error: '`url` field is required' }, 400);
+    }
+
     var parsed = req.body.parsed = url.parse(req.body.url);
 
     if (!parsed.protocol || !parsed.host) {
