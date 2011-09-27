@@ -148,8 +148,8 @@ module.exports = (function (port, secure) {
   function validate (req, res, next) {
     var parsed = req.body.parsed = url.parse(req.body.url);
 
-    if (!req.body.url || !parsed.protocol || !parsed.host) {
-      return res.send(400, { error: 'Bad `url` field' });
+    if (!parsed.protocol || !parsed.host) {
+      return res.json({ error: 'Bad `url` field' }, 400);
     }
 
     next();
@@ -162,7 +162,7 @@ module.exports = (function (port, secure) {
   function exists (req, res, next) {
     redis.hget('urls-hash', req.body.url, function (err, val) {
       if (err) return next(err);
-      if (val) return res.send({ short: val });
+      if (val) return res.json({ short: val });
       next();
     });
   }
@@ -202,7 +202,7 @@ module.exports = (function (port, secure) {
             obj.parsed = parsed;
             io.of('/main').volatile.emit('total', length + 1);
             io.of('/stats').volatile.emit('url created', short, parsed, Date.now());
-            req.res.send({ short: 'https://' + app.set('domain') + '/' + short });
+            req.res.json({ short: 'https://' + app.set('domain') + '/' + short });
 
             // check if there's another link to process
             var next = queue.shift();
