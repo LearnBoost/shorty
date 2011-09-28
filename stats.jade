@@ -26,6 +26,5 @@ template(id="url visited"):
     .short <a href="/#{short}">/#{short}</a>
     .url <a href="#{url.href}"><em>#{url.hostname}</em><b>#{url.pathname}</b></a>
 
-- var transactions = JSON.stringify(transactions)
 script
-  var transactions = !{transactions}
+  var transactions = !{JSON.stringify(transactions)}
