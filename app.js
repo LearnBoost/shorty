@@ -122,7 +122,7 @@ module.exports = (function (port, secure) {
    * Create endpoint.
    */
 
-  app.post('/create', validate, exists, function (req, res, next) {
+  app.post('/', validate, exists, function (req, res, next) {
     var url = req.body.url
       , parsed = req.body.parsed
 
