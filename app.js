@@ -59,6 +59,10 @@ module.exports = (function (port, secure) {
 
   var io = sio.listen(app);
 
+  // quiet :)
+
+  io.set('log level', 0);
+
   /**
    * Reads a file
    *
