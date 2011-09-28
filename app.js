@@ -211,7 +211,7 @@ module.exports = (function (port, secure) {
   app.get('/:short', function (req, res, next) {
     redis.hget('urls', req.params.short, function (err, val) {
       if (err) return next(err);
-      if (!val) return next();
+      if (!val) return res.render('404');
 
       redis.lpush('transactions', JSON.stringify({
           type: 'url visited'
