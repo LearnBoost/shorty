@@ -6,11 +6,11 @@
 var express = require('express')
   , stylus = require('stylus')
   , sio = require('socket.io')
-  , fs = require('fs')
   , base60 = require('./base60')
+  , jadevu = require('jadevu')
   , url = require('url')
   , nib = require('nib')
-  , jadevu = require('jadevu')
+  , fs = require('fs')
 
 /**
  * Determine environment.
