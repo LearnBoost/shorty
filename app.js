@@ -178,7 +178,7 @@ module.exports = (function (port, secure) {
   function exists (req, res, next) {
     redis.hget('urls-hash', req.body.url, function (err, val) {
       if (err) return next(err);
-      if (val) return res.send({ short: val });
+      if (val) return res.send({ short: 'https://' + app.set('domain') + '/' + val });
       next();
     });
   }
