@@ -177,6 +177,17 @@ module.exports = (function (port, secure) {
   };
 
   /**
+   * Content negotiation.
+   */
+
+  function accept(type) {
+    return function(req, res, next){
+      if (req.accepts(type)) return next();
+      next('route');
+    }
+  }
+
+  /**
    * Checks that the URL doesnt exist already
    */
 
@@ -187,6 +198,17 @@ module.exports = (function (port, secure) {
       next();
     });
   }
+
+  /**
+   * GET JSON statistics.
+   */
+
+  app.get('/stats', accept('json'), function (req, res, next) {
+    redis.lrange('transactions', 0, 100, function (err, vals) {
+      if (err) return next(err);
+      res.send(vals);
+    });
+  });
 
   /**
    * GET statistics.
