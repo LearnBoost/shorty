@@ -113,7 +113,7 @@ module.exports = (function (port, secure) {
   });
 
   /**
-   * Index.
+   * GET index page.
    */
 
   app.get('/', function (req, res, next) {
@@ -124,7 +124,7 @@ module.exports = (function (port, secure) {
   });
 
   /**
-   * Create endpoint.
+   * POST a url.
    */
 
   app.post('/', validate, exists, function (req, res, next) {
