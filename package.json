@@ -1,6 +1,7 @@
 {
     "name": "shorty"
   , "version": "0.0.1"
+  , "main": "./client.js"
   , "dependencies": {
         "express": "2.4.6"
       , "socket.io": "0.8.4"
@@ -9,5 +10,6 @@
       , "jadevu": "0.0.7"
       , "stylus": "0.15.4"
       , "nib": "0.2.0"
+      , "request": "2.1.1"
     }
 }
