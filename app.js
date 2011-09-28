@@ -49,6 +49,7 @@ module.exports = (function (port, secure) {
    * Basic middleware.
    */
 
+  if ('development' == app.settings.env)  app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(stylus.middleware({ src: __dirname + '/public/', compile: css }));
   app.use(express.static('public'));
