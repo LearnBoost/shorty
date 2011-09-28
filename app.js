@@ -49,7 +49,7 @@ module.exports = (function (port, secure) {
    * Basic middleware.
    */
 
-  if ('development' == app.settings.env)  app.use(express.logger('dev'));
+  if ('development' == env)  app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(stylus.middleware({ src: __dirname + '/public/', compile: css }));
   app.use(express.static('public'));
@@ -81,7 +81,7 @@ module.exports = (function (port, secure) {
   function css (str, path) {
     return stylus(str)
       .set('filename', path)
-      .set('compress', true)
+      .set('compress', 'production' == env)
       .use(nib())
       .import('nib');
   };
