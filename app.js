@@ -206,7 +206,7 @@ module.exports = (function (port, secure) {
   app.get('/stats', accept('json'), function (req, res, next) {
     redis.lrange('transactions', 0, 100, function (err, vals) {
       if (err) return next(err);
-      res.send(vals);
+      res.send(vals.map(JSON.parse));
     });
   });
 
