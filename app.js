@@ -189,7 +189,7 @@ module.exports = (function (port, secure) {
   }
 
   /**
-   * Stats page.
+   * GET statistics.
    */
 
   app.get('/stats', function (req, res, next) {
@@ -205,7 +205,7 @@ module.exports = (function (port, secure) {
   });
 
   /**
-   * Redirection.
+   * GET :short url to perform redirect.
    */
 
   app.get('/:short', function (req, res, next) {
