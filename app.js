@@ -122,23 +122,39 @@ module.exports = (function (port, secure) {
    * Create endpoint.
    */
 
-  var locked = false
-    , queue = []
-
   app.post('/create', validate, exists, function (req, res, next) {
-    if (locked) {
-      queue.push(req);
+    var url = req.body.url
+      , parsed = req.body.parsed
 
-      // allow a maximum of 5 seconds for processing
-      req.timer = setTimeout(function () {
-        queue.splice(queue.indexOf(req), 1);
-        res.send(503);
+    // get count of urls
+    redis.hlen('urls', function (err, length) {
+      if (err) return next(500);
+
+      var short = base60.toString(length ? length + 1 : 0);
+
+      redis.hset('urls', short, url, function (err) {
+        if (err) return next(err);
+        redis.hset('urls-hash', url, short, function (err) {
+          if (err) return next(err);
+
+          var obj = {
+              type: 'url created'
+            , url: url
+            , short: short
+            , date: new Date
+          };
+
+          redis.lpush('transactions', JSON.stringify(obj), function (err) {
+            if (err) return next(500);
+
+            obj.parsed = parsed;
+            io.of('/main').volatile.emit('total', length + 1);
+            io.of('/stats').volatile.emit('url created', short, parsed, Date.now());
+            res.send({ short: 'https://' + app.set('domain') + '/' + short });
+          });
+        });
       });
-
-      return;
-    } else {
-      handle(req);
-    }
+    });
   });
 
   /**
@@ -146,14 +162,10 @@ module.exports = (function (port, secure) {
    */
 
   function validate (req, res, next) {
-    if (!req.body || !req.body.url) {
-      return res.json({ error: '`url` field is required' }, 400);
-    }
-
     var parsed = req.body.parsed = url.parse(req.body.url);
 
-    if (!parsed.protocol || !parsed.host) {
-      return res.json({ error: 'Bad `url` field' }, 400);
+    if (!req.body.url || !parsed.protocol || !parsed.host) {
+      return res.send(400, { error: 'Bad `url` field' });
     }
 
     next();
@@ -166,60 +178,8 @@ module.exports = (function (port, secure) {
   function exists (req, res, next) {
     redis.hget('urls-hash', req.body.url, function (err, val) {
       if (err) return next(err);
-      if (val) return res.json({ short: 'https://' + app.set('domain') + '/' + val });
+      if (val) return res.send({ short: val });
       next();
-    });
-  }
-
-  /**
-   * Handles URL creation
-   */
-
-  function handle (req) {
-    var url = req.body.url
-      , parsed = req.body.parsed
-
-    // locking to ensure atomicity and uniqueness
-    locked = true;
-
-    // get count of urls
-    redis.hlen('urls', function (err, length) {
-      if (err) return req.next(500);
-
-      var short = base60.toString(length ? length + 1 : 0);
-
-      redis.hset('urls', short, url, function (err) {
-        if (err) return req.next(err);
-        redis.hset('urls-hash', url, short, function (err) {
-          if (err) return req.next(err);
-
-          var obj = {
-              type: 'url created'
-            , url: url
-            , short: short
-            , date: new Date
-          };
-
-          redis.lpush('transactions', JSON.stringify(obj), function (err) {
-            if (err) return req.next(500);
-
-            obj.parsed = parsed;
-            io.of('/main').volatile.emit('total', length + 1);
-            io.of('/stats').volatile.emit('url created', short, parsed, Date.now());
-            req.res.json({ short: 'https://' + app.set('domain') + '/' + short });
-
-            // check if there's another link to process
-            var next = queue.shift();
-            if (next) {
-              clearTimeout(next.timer);
-              handle(req);
-            } else {
-              // unlock
-              locked = false;
-            }
-          });
-        });
-      });
     });
   }
 
