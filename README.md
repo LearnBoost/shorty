@@ -6,7 +6,7 @@ Shorty is LearnBoost's URL shortening/redirection service.
 
 - Redis backed
 - Super fast
-- At production use on https://lrn.bt
+- At production use on https://lrn.cc
 - Uses express, jade, stylus. Easy to hack on!
 - Realtime stats with [socket.io](http://socket.io)
     ![](http://f.cl.ly/items/2h2k1p1b2E1I2y0N0Y3u/Image%202011.09.21%208:49:42%20PM.png) 
@@ -14,7 +14,7 @@ Shorty is LearnBoost's URL shortening/redirection service.
 
 ## Client API
 
-Post to `/create` with the `url` field to create.
+Post to `/` with the `url` field to create.
 
 - If a field is missing or incorrect, status `400` is returned with a JSON
 body (`error` key)
@@ -25,14 +25,14 @@ body (`error` key)
 ## Config
 
 To set the short URL to include in JSON responses set the env var
-`SHORTY_DOMAIN` to your hostname (e.g.: `lrn.bt`)
+`SHORTY_DOMAIN` to your hostname (e.g.: `lrn.cc`)
 
 ## Examples
 
 Using `curl`:
 
 ``` shell
-curl -d "url=http://www.learnboost.com" https://lrn.bt/create
+curl -X POST "url=http://www.learnboost.com" https://lrn.cc/
 ```
 
 ## Credits

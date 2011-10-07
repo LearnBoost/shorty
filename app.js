@@ -88,7 +88,7 @@ module.exports = (function (port, secure) {
   app.configure(function () {
     app.set('views', __dirname);
     app.set('view engine', 'jade');
-    app.set('domain', process.env.SHORTY_DOMAIN || 'lrn.bt');
+    app.set('domain', process.env.SHORTY_DOMAIN || 'lrn.cc');
   });
 
   /**
