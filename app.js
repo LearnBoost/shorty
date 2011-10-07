@@ -6,11 +6,11 @@
 var express = require('express')
   , stylus = require('stylus')
   , sio = require('socket.io')
-  , fs = require('fs')
   , base60 = require('./base60')
+  , jadevu = require('jadevu')
   , url = require('url')
   , nib = require('nib')
-  , jadevu = require('jadevu')
+  , fs = require('fs')
 
 /**
  * Determine environment.
@@ -49,6 +49,7 @@ module.exports = (function (port, secure) {
    * Basic middleware.
    */
 
+  if ('development' == env)  app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(stylus.middleware({ src: __dirname + '/public/', compile: css }));
   app.use(express.static('public'));
@@ -58,6 +59,10 @@ module.exports = (function (port, secure) {
    */
 
   var io = sio.listen(app);
+
+  // quiet :)
+
+  io.set('log level', 0);
 
   /**
    * Reads a file
@@ -76,7 +81,7 @@ module.exports = (function (port, secure) {
   function css (str, path) {
     return stylus(str)
       .set('filename', path)
-      .set('compress', true)
+      .set('compress', 'production' == env)
       .use(nib())
       .import('nib');
   };
@@ -108,7 +113,7 @@ module.exports = (function (port, secure) {
   });
 
   /**
-   * Index.
+   * GET index page.
    */
 
   app.get('/', function (req, res, next) {
@@ -119,7 +124,7 @@ module.exports = (function (port, secure) {
   });
 
   /**
-   * Create endpoint.
+   * POST a url.
    */
 
   app.post('/', validate, exists, function (req, res, next) {
@@ -172,19 +177,41 @@ module.exports = (function (port, secure) {
   };
 
   /**
+   * Content negotiation.
+   */
+
+  function accept(type) {
+    return function(req, res, next){
+      if (req.accepts(type)) return next();
+      next('route');
+    }
+  }
+
+  /**
    * Checks that the URL doesnt exist already
    */
 
   function exists (req, res, next) {
     redis.hget('urls-hash', req.body.url, function (err, val) {
       if (err) return next(err);
-      if (val) return res.send({ short: val });
+      if (val) return res.send({ short: 'https://' + app.set('domain') + '/' + val });
       next();
     });
   }
 
   /**
-   * Stats page.
+   * GET JSON statistics.
+   */
+
+  app.get('/stats', accept('json'), function (req, res, next) {
+    redis.lrange('transactions', 0, 100, function (err, vals) {
+      if (err) return next(err);
+      res.send(vals.map(JSON.parse));
+    });
+  });
+
+  /**
+   * GET statistics.
    */
 
   app.get('/stats', function (req, res, next) {
@@ -200,13 +227,13 @@ module.exports = (function (port, secure) {
   });
 
   /**
-   * Redirection.
+   * GET :short url to perform redirect.
    */
 
   app.get('/:short', function (req, res, next) {
     redis.hget('urls', req.params.short, function (err, val) {
       if (err) return next(err);
-      if (!val) return next();
+      if (!val) return res.render('404');
 
       redis.lpush('transactions', JSON.stringify({
           type: 'url visited'
