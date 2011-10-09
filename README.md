@@ -62,6 +62,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### 3rd-party
 
-- Base60k library by Tantek Çelik
+- Base6k library by Tantek Çelik
 - Icon by David Renelt for non-commercial use
 (http://www.iconarchive.com/show/little-icon-people-icons-by-david-renelt.html)
