@@ -52,7 +52,7 @@ module.exports = (function (port, secure) {
   if ('development' == env)  app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(stylus.middleware({ src: __dirname + '/public/', compile: css }));
-  app.use(express.static('public'));
+  app.use(express.static(__dirname + '/public'));
 
   /**
    * Socket.IO
