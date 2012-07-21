@@ -27,6 +27,9 @@ body (`error` key)
 To set the short URL to include in JSON responses set the env var
 `SHORTY_DOMAIN` to your hostname (e.g.: `lrn.cc`)
 
+If not running redis on localhost, set `SHORTY_REDIS_PORT` and 
+`SHORTY_REDIS_HOST` pointing to your redis instance.
+
 ## Examples
 
 Using `curl`:
