@@ -254,7 +254,6 @@ if (!module.parent) {
     var addr = app.address();
     console.error(
         '   app listening on ' + addr.address + ':' + addr.port
-      + (secure ? ' (secure) ' : '')
     );
   });
 
