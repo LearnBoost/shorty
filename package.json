@@ -6,12 +6,12 @@
       , { "name": "TJ Holowaychuk", "email": "tj@learnboost.com" }
     ]
   , "dependencies": {
-        "express": "2.4.6"
-      , "socket.io": "0.8.4"
-      , "redis": "0.6.7"
-      , "jade": "0.16.0"
-      , "jadevu": "0.0.7"
-      , "stylus": "0.15.4"
-      , "nib": "0.2.0"
+        "express": "~2.5.10"
+      , "socket.io": "~0.9.6"
+      , "redis": "~0.7.2"
+      , "jade": "~0.26.3"
+      , "jadevu": "~0.0.7"
+      , "stylus": "~0.28.2"
+      , "nib": "~0.7.0"
     }
 }
