@@ -38,6 +38,7 @@ app = module.exports = express.createServer();
  */
 
 if ('development' == env)  app.use(express.logger('dev'));
+if (process.env.SHORTY_BASIC_AUTH) app.use(express.basicAuth.apply(null, process.env.SHORTY_BASIC_AUTH.split(':')));
 app.use(express.bodyParser());
 app.use(stylus.middleware({ src: __dirname + '/public/', compile: css }));
 app.use(express.static(__dirname + '/public'));
