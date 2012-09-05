@@ -37,8 +37,12 @@ app = module.exports = express.createServer();
  * Basic middleware.
  */
 
-if ('development' == env)  app.use(express.logger('dev'));
-if (process.env.SHORTY_BASIC_AUTH) app.use(express.basicAuth.apply(null, process.env.SHORTY_BASIC_AUTH.split(':')));
+if ('development' == env) {
+  app.use(express.logger('dev'));
+}
+if (process.env.SHORTY_BASIC_AUTH) {
+  app.use(express.basicAuth.apply(null, process.env.SHORTY_BASIC_AUTH.split(':')));
+}
 app.use(express.bodyParser());
 app.use(stylus.middleware({ src: __dirname + '/public/', compile: css }));
 app.use(express.static(__dirname + '/public'));
@@ -253,14 +257,10 @@ app.get('/:short', function (req, res, next) {
 if (!module.parent) {
   app.listen(process.env.PORT || 3000, function () {
     var addr = app.address();
-    console.error(
-        '   app listening on ' + addr.address + ':' + addr.port
-    );
+    console.error('   app listening on ' + addr.address + ':' + addr.port);
   });
 
-  if (!process.listeners('uncaughtException')) {
-    process.on('uncaughtException', function (e) {
-      console.error(e && e.stack ? e.stack : e);
-    });
-  }
+  process.on('uncaughtException', function (e) {
+    console.error(e && e.stack ? e.stack : e);
+  });
 }
