@@ -28,6 +28,14 @@ redis = require('redis').createClient(
 );
 
 /**
+ * Redis lock.
+ * Uses "shorty-lock" as the key name.
+ * Default timeout of 10 seconds.
+ */
+
+var lock = require('redis-lock')(redis).bind(null, 'shorty-lock', 10000);
+
+/**
  * Create app.
  */
 
@@ -123,35 +131,51 @@ app.get('/', function (req, res, next) {
 app.post('/', validate, exists, function (req, res, next) {
   var url = req.body.url
     , parsed = req.body.parsed
+    , length
+    , short
+    , obj
 
-  // get count of urls
-  redis.hlen('urls', function (err, length) {
-    if (err) return next(500);
+  lock(function (unlock) {
+    // get count of urls
+    redis.hlen('urls', onLenth);
+    function onLenth (err, len) {
+      if (err) return next(500);
+      length = len;
+      short = base60.toString(length ? length + 1 : 0);
 
-    var short = base60.toString(length ? length + 1 : 0);
-
-    redis.hset('urls', short, url, function (err) {
+      // next save the short url with the original url to the "urls" hash
+      redis.hset('urls', short, url, onUrlsSet);
+    }
+    function onUrlsSet (err) {
       if (err) return next(err);
-      redis.hset('urls-hash', url, short, function (err) {
-        if (err) return next(err);
 
-        var obj = {
-            type: 'url created'
-          , url: url
-          , short: short
-          , date: new Date
-        };
+      // next save the original url with the short url to the "urls-hash" hash
+      redis.hset('urls-hash', url, short, onUrlsHashSet);
+    }
+    function onUrlsHashSet (err) {
+      if (err) return next(err);
 
-        redis.lpush('transactions', JSON.stringify(obj), function (err) {
-          if (err) return next(500);
+      // finally create a "transaction" object for this action
+      obj = {
+          type: 'url created'
+        , url: url
+        , short: short
+        , date: new Date
+      };
 
-          obj.parsed = parsed;
-          io.of('/main').volatile.emit('total', length + 1);
-          io.of('/stats').volatile.emit('url created', short, parsed, Date.now());
-          res.send({ short: 'https://' + app.set('domain') + '/' + short });
-        });
-      });
-    });
+      // push the transaction object to the "transitions" list
+      redis.lpush('transactions', JSON.stringify(obj), onTransactions);
+    }
+    function onTransactions (err) {
+      if (err) return next(500);
+
+      obj.parsed = parsed;
+      io.of('/main').volatile.emit('total', length + 1);
+      io.of('/stats').volatile.emit('url created', short, parsed, Date.now());
+      res.send({ short: 'https://' + app.set('domain') + '/' + short });
+
+      process.nextTick(unlock);
+    }
   });
 });
 
@@ -228,25 +252,29 @@ app.get('/:short', function (req, res, next) {
     if (err) return next(err);
     if (!val) return res.render('404');
 
-    redis.lpush('transactions', JSON.stringify({
-        type: 'url visited'
-      , url: val
-      , short: req.params.short
-      , date: Date.now()
-      , ip: req.socket.remoteAddress
-      , headers: req.headers
-    }), function (err) {
-      if (err) console.error(err);
+    lock(function (unlock) {
+      redis.lpush('transactions', JSON.stringify({
+          type: 'url visited'
+        , url: val
+        , short: req.params.short
+        , date: Date.now()
+        , ip: req.socket.remoteAddress
+        , headers: req.headers
+      }), function (err) {
+        if (err) console.error(err);
+      });
+
+      io.of('/stats').volatile.emit(
+          'url visited'
+        , req.params.short
+        , url.parse(val)
+        , Date.now()
+      );
+
+      res.redirect(val);
+
+      process.nextTick(unlock);
     });
-
-    io.of('/stats').volatile.emit(
-        'url visited'
-      , req.params.short
-      , url.parse(val)
-      , Date.now()
-    );
-
-    res.redirect(val);
   });
 });
 

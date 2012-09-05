@@ -9,6 +9,7 @@
         "express": "~2.5.10"
       , "socket.io": "~0.9.6"
       , "redis": "~0.7.2"
+      , "redis-lock": "~0.0.2"
       , "jade": "~0.26.3"
       , "jadevu": "~0.0.7"
       , "stylus": "~0.28.2"
