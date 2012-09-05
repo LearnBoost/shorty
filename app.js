@@ -8,6 +8,7 @@ var express = require('express')
   , sio = require('socket.io')
   , base60 = require('./base60')
   , jadevu = require('jadevu')
+  , crypto = require('crypto')
   , url = require('url')
   , nib = require('nib')
   , fs = require('fs')
@@ -131,6 +132,7 @@ app.get('/', function (req, res, next) {
 app.post('/', validate, exists, function (req, res, next) {
   var url = req.body.url
     , parsed = req.body.parsed
+    , private = req.body.private
     , length
     , short
     , obj
@@ -141,7 +143,12 @@ app.post('/', validate, exists, function (req, res, next) {
     function onLenth (err, len) {
       if (err) return next(500);
       length = len;
-      short = base60.toString(length ? length + 1 : 0);
+
+      if (private) {
+        short = crypto.randomBytes(20).toString('hex');
+      } else {
+        short = base60.toString(length ? length + 1 : 0);
+      }
 
       // next save the short url with the original url to the "urls" hash
       redis.hset('urls', short, url, onUrlsSet);
@@ -209,6 +216,10 @@ function accept(type) {
  */
 
 function exists (req, res, next) {
+  if (req.body.private) {
+    // for "private" links, always return a new one
+    return next();
+  }
   redis.hget('urls-hash', req.body.url, function (err, val) {
     if (err) return next(err);
     if (val) return res.send({ short: 'https://' + app.set('domain') + '/' + val });
