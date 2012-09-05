@@ -35,7 +35,7 @@ If not running redis on localhost, set `SHORTY_REDIS_PORT` and
 Using `curl`:
 
 ``` shell
-curl -X POST "url=http://www.learnboost.com" https://lrn.cc/
+curl -X POST -d "url=http://www.learnboost.com" https://lrn.cc/
 ```
 
 ## Credits
