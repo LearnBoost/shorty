@@ -1,18 +1,28 @@
 {
-    "name": "shorty"
-  , "version": "0.0.1"
-  , "contributors": [
-        { "name": "Guillermo Rauch", "email": "guillermo@learnboost.com" }
-      , { "name": "TJ Holowaychuk", "email": "tj@learnboost.com" }
-    ]
-  , "dependencies": {
-        "express": "~2.5.10"
-      , "socket.io": "~0.9.6"
-      , "redis": "~0.7.2"
-      , "redis-lock": "~0.0.2"
-      , "jade": "~0.26.3"
-      , "jadevu": "~0.0.7"
-      , "stylus": "~0.28.2"
-      , "nib": "~0.7.0"
+    "name": "shorty",
+    "version": "0.0.1",
+    "contributors": [
+        {
+            "name": "Guillermo Rauch",
+            "email": "guillermo@learnboost.com"
+        },
+        {
+            "name": "TJ Holowaychuk",
+            "email": "tj@learnboost.com"
+        }
+    ],
+    "dependencies": {
+        "express": "~2.5.10",
+        "socket.io": "~0.9.6",
+        "redis": "~0.7.2",
+        "redis-lock": "~0.0.2",
+        "jade": "~0.26.3",
+        "jadevu": "~0.0.7",
+        "stylus": "~0.28.2",
+        "nib": "~0.7.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/LearnBoost/shorty.git"
     }
 }
