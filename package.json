@@ -21,4 +21,8 @@
       , "stylus": "~0.28.2"
       , "nib": "~0.7.0"
     }
+  , "repository": {
+        "type": "git"
+      , "url": "https://github.com/LearnBoost/shorty.git"
+    }
 }
