@@ -24,8 +24,7 @@ var env = process.env.NODE_ENV || 'development';
  */
 
 redis = require('redis').createClient(
-    process.env.SHORTY_REDIS_PORT
-  , process.env.SHORTY_REDIS_HOST
+    process.env.SHORTY_REDIS_URL
 );
 
 /**
