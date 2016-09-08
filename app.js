@@ -227,21 +227,10 @@ function exists (req, res, next) {
 }
 
 /**
- * GET JSON statistics.
- */
-
-app.get('/stats', accept('json'), function (req, res, next) {
-  redis.lrange('transactions', 0, 100, function (err, vals) {
-    if (err) return next(err);
-    res.send(vals.map(JSON.parse));
-  });
-});
-
-/**
  * GET statistics.
  */
 
-app.get('/stats', function (req, res, next) {
+app.get('/stats', accept('html'), function (req, res, next) {
   redis.lrange('transactions', 0, 100, function (err, vals) {
     if (err) return next(err);
     res.render('stats', { transactions: vals ? vals.map(function (v) {
@@ -250,6 +239,17 @@ app.get('/stats', function (req, res, next) {
       delete v.url;
       return v;
     }).reverse() : [] });
+  });
+});
+
+/**
+ * GET JSON statistics.
+ */
+
+app.get('/stats', accept('json'), function (req, res, next) {
+  redis.lrange('transactions', 0, 100, function (err, vals) {
+    if (err) return next(err);
+    res.send(vals.map(JSON.parse));
   });
 });
 
