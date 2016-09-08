@@ -94,7 +94,7 @@ function css (str, path) {
 app.configure(function () {
   app.set('views', __dirname);
   app.set('view engine', 'jade');
-  app.set('domain', process.env.SHORTY_DOMAIN || 'lrn.cc');
+  app.set('domain', process.env.SHORTY_DOMAIN || 'https://lrn.cc');
 });
 
 /**
@@ -178,7 +178,7 @@ app.post('/', validate, exists, function (req, res, next) {
       obj.parsed = parsed;
       io.of('/main').volatile.emit('total', length + 1);
       io.of('/stats').volatile.emit('url created', short, parsed, Date.now());
-      res.send({ short: 'https://' + app.set('domain') + '/' + short });
+      res.send({ short: app.set('domain') + '/' + short });
 
       process.nextTick(unlock);
     }
@@ -221,7 +221,7 @@ function exists (req, res, next) {
   }
   redis.hget('urls-hash', req.body.url, function (err, val) {
     if (err) return next(err);
-    if (val) return res.send({ short: 'https://' + app.set('domain') + '/' + val });
+    if (val) return res.send({ short: app.set('domain') + '/' + val });
     next();
   });
 }
