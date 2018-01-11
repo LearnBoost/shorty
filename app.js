@@ -19,13 +19,19 @@ var express = require('express')
 
 var env = process.env.NODE_ENV || 'development';
 
+const config = {
+  port: process.env.PORT || 3000,
+  domain: process.env.SHORTY_DOMAIN || 'https://lrn.cc',
+  redis_url: process.env.SHORTY_REDIS_URL || 'http://localhost:2343',
+  basic_auth: process.env.SHORTY_BASIC_AUTH || null,
+
+}
+
 /**
  * Create db.
  */
 
-redis = require('redis').createClient(
-    process.env.SHORTY_REDIS_URL
-);
+redis = require('redis').createClient(config.redis_url);
 
 /**
  * Redis lock.
@@ -48,8 +54,8 @@ app = module.exports = express.createServer();
 if ('development' == env) {
   app.use(express.logger('dev'));
 }
-if (process.env.SHORTY_BASIC_AUTH) {
-  app.use(express.basicAuth.apply(null, process.env.SHORTY_BASIC_AUTH.split(':')));
+if (config.basic_auth) {
+  app.use(express.basicAuth.apply(null, config.basic_auth.split(':')));
 }
 app.use(express.bodyParser());
 app.use(stylus.middleware({ src: __dirname + '/public/', compile: css }));
@@ -94,7 +100,7 @@ function css (str, path) {
 app.configure(function () {
   app.set('views', __dirname);
   app.set('view engine', 'jade');
-  app.set('domain', process.env.SHORTY_DOMAIN || 'https://lrn.cc');
+  app.set('domain', config.domain);
 });
 
 /**
@@ -293,7 +299,7 @@ app.get('/:short', function (req, res, next) {
  */
 
 if (!module.parent) {
-  app.listen(process.env.PORT || 3000, function () {
+  app.listen(config.port, function () {
     var addr = app.address();
     console.error('   app listening on ' + addr.address + ':' + addr.port);
   });
