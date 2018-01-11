@@ -22,7 +22,7 @@ var env = process.env.NODE_ENV || 'development';
 const config = {
   port: process.env.PORT || 3000,
   domain: process.env.SHORTY_DOMAIN || 'https://lrn.cc',
-  redis_url: process.env.SHORTY_REDIS_URL || 'http://localhost:2343',
+  redis_url: process.env.SHORTY_REDIS_URL || 'redis:// localhost:6379',
   basic_auth: process.env.SHORTY_BASIC_AUTH || null,
 
 }
