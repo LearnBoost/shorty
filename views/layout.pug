@@ -1,0 +1,27 @@
+doctype 5
+html
+  head
+    title Shorty
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js")
+    script(src="/js/animation.js")
+    style(type='text/css').
+      body {
+        padding: 20px 100px;
+        font: 14px/1.4 'helvetica neue', helvetica, arial, sans-serif;
+      }
+      h1 {
+        font-size: 26px;
+      }
+      h1 span {
+        background: url("/images/man.png") no-repeat right;
+        display: inline-block;
+        padding-right: 30px;
+      }
+      h2 {
+        color: #444;
+      }
+    block head
+      link(href="/css/index.css", rel="stylesheet")
+  body
+    h1: span Shorty
+    block content
