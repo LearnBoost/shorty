@@ -1,28 +1,34 @@
 {
-    "name": "shorty"
-  , "version": "0.0.1"
-  , "engines": {
-        "node": "4.x.x"
-    }
-  , "scripts": {
-        "start": "node app.js"
-    }
-  , "contributors": [
-        { "name": "Guillermo Rauch", "email": "guillermo@learnboost.com" }
-      , { "name": "TJ Holowaychuk", "email": "tj@learnboost.com" }
-    ]
-  , "dependencies": {
-        "express": "~2.5.10"
-      , "socket.io": "~1.4.8"
-      , "redis": "~2.6.2"
-      , "redis-lock": "~0.0.2"
-      , "jade": "~0.26.3"
-      , "jadevu": "~0.0.7"
-      , "stylus": "~0.28.2"
-      , "nib": "~0.7.0"
-    }
-  , "repository": {
-        "type": "git"
-      , "url": "https://github.com/LearnBoost/shorty.git"
-    }
+      "name": "shorty",
+      "version": "0.0.1",
+      "engines": {
+            "node": "8.9.4"
+      },
+      "scripts": {
+            "start": "node app.js"
+      },
+      "contributors": [
+            {
+                  "name": "Guillermo Rauch",
+                  "email": "guillermo@learnboost.com"
+            },
+            {
+                  "name": "TJ Holowaychuk",
+                  "email": "tj@learnboost.com"
+            }
+      ],
+      "dependencies": {
+            "express": "~2.5.10",
+            "socket.io": "~1.4.8",
+            "redis": "~2.6.2",
+            "redis-lock": "~0.0.2",
+            "jade": "~0.26.3",
+            "jadevu": "~0.0.7",
+            "stylus": "~0.28.2",
+            "nib": "~0.7.0"
+      },
+      "repository": {
+            "type": "git",
+            "url": "https://github.com/LearnBoost/shorty.git"
+      }
 }
