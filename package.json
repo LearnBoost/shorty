@@ -3,25 +3,11 @@
       "version": "0.0.2",
       "license": "MIT",
       "engines": {
-            "node": "8.9.4"
+            "node": "6.13.0"
       },
       "scripts": {
             "start": "node app.js"
       },
-      "contributors": [
-            {
-                  "name": "Guillermo Rauch",
-                  "email": "guillermo@learnboost.com"
-            },
-            {
-                  "name": "TJ Holowaychuk",
-                  "email": "tj@learnboost.com"
-            },
-            {
-                  "name": "Drew Butler",
-                  "email": "drew.butler@automattic.com"
-            }
-      ],
       "dependencies": {
             "body-parser": "1.18.2",
             "errorhandler": "1.5.0",
