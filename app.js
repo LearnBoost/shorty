@@ -5,9 +5,11 @@
 
 var express = require('express')
   , stylus = require('stylus')
-  , sio = require('socket.io')
-  , base60 = require('./base60')
-  , jadevu = require('jadevu')
+  , http = require('http')
+  , base60 = require('./lib/base60')
+  , morgan = require('morgan')
+  , bodyParser = require('body-parser')
+  , errorHandler = require('errorhandler')
   , crypto = require('crypto')
   , url = require('url')
   , nib = require('nib')
@@ -19,13 +21,18 @@ var express = require('express')
 
 var env = process.env.NODE_ENV || 'development';
 
+const config = {
+  port: process.env.PORT || 3000,
+  domain: process.env.SHORTY_DOMAIN || 'https://lrn.cc',
+  redis_url: process.env.SHORTY_REDIS_URL || 'redis://localhost:6379',
+
+}
+
 /**
  * Create db.
  */
 
-redis = require('redis').createClient(
-    process.env.SHORTY_REDIS_URL
-);
+redis = require('redis').createClient(config.redis_url);
 
 /**
  * Redis lock.
@@ -39,31 +46,20 @@ var lock = require('redis-lock')(redis).bind(null, 'shorty-lock', 10000);
  * Create app.
  */
 
-app = module.exports = express.createServer();
-
+var app = module.exports = express();
+var server = http.createServer(app);
 /**
  * Basic middleware.
  */
 
 if ('development' == env) {
-  app.use(express.logger('dev'));
+  app.use(morgan('dev'));
 }
-if (process.env.SHORTY_BASIC_AUTH) {
-  app.use(express.basicAuth.apply(null, process.env.SHORTY_BASIC_AUTH.split(':')));
-}
-app.use(express.bodyParser());
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(stylus.middleware({ src: __dirname + '/public/', compile: css }));
 app.use(express.static(__dirname + '/public'));
-
-/**
- * Socket.IO
- */
-
-var io = sio.listen(app);
-
-// quiet :)
-
-io.set('log level', 0);
 
 /**
  * Reads a file
@@ -91,27 +87,9 @@ function css (str, path) {
  * Configure app.
  */
 
-app.configure(function () {
-  app.set('views', __dirname);
-  app.set('view engine', 'jade');
-  app.set('domain', process.env.SHORTY_DOMAIN || 'https://lrn.cc');
-});
-
-/**
- * Development configuration.
- */
-
-app.configure('development', function () {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-
-/**
- * Production configuration.
- */
-
-app.configure('production', function () {
-  app.use(express.errorHandler());
-});
+app.set('views', __dirname + '/views');
+app.set('view engine', 'pug');
+app.set('domain', config.domain);
 
 /**
  * GET index page.
@@ -176,8 +154,6 @@ app.post('/', validate, exists, function (req, res, next) {
       if (err) return next(500);
 
       obj.parsed = parsed;
-      io.of('/main').volatile.emit('total', length + 1);
-      io.of('/stats').volatile.emit('url created', short, parsed, Date.now());
       res.send({ short: app.set('domain') + '/' + short });
 
       process.nextTick(unlock);
@@ -227,40 +203,13 @@ function exists (req, res, next) {
 }
 
 /**
- * GET statistics.
- */
-
-app.get('/stats', accept('html'), function (req, res, next) {
-  redis.lrange('transactions', 0, 100, function (err, vals) {
-    if (err) return next(err);
-    res.render('stats', { transactions: vals ? vals.map(function (v) {
-      v = JSON.parse(v);
-      v.parsed = url.parse(v.url);
-      delete v.url;
-      return v;
-    }).reverse() : [] });
-  });
-});
-
-/**
- * GET JSON statistics.
- */
-
-app.get('/stats', accept('json'), function (req, res, next) {
-  redis.lrange('transactions', 0, 100, function (err, vals) {
-    if (err) return next(err);
-    res.send(vals.map(JSON.parse));
-  });
-});
-
-/**
  * GET :short url to perform redirect.
  */
 
 app.get('/:short', function (req, res, next) {
   redis.hget('urls', req.params.short, function (err, val) {
     if (err) return next(err);
-    if (!val) return res.render('404');
+    if (!val) return res.status(404).render('404');
 
     lock(function (unlock) {
       redis.lpush('transactions', JSON.stringify({
@@ -274,13 +223,6 @@ app.get('/:short', function (req, res, next) {
         if (err) console.error(err);
       });
 
-      io.of('/stats').volatile.emit(
-          'url visited'
-        , req.params.short
-        , url.parse(val)
-        , Date.now()
-      );
-
       res.redirect(val);
 
       process.nextTick(unlock);
@@ -288,14 +230,26 @@ app.get('/:short', function (req, res, next) {
   });
 });
 
+
+/**
+ * Erorr handlers
+ */
+if (env === 'development') {
+  app.use(errorHandler());
+
+} else if (env === 'production') {
+  app.use(function (err, req, res, next) {
+    res.status(500).json({ status: 'error' });
+  })
+}
+
 /**
  * Listen.
  */
 
 if (!module.parent) {
-  app.listen(process.env.PORT || 3000, function () {
-    var addr = app.address();
-    console.error('   app listening on ' + addr.address + ':' + addr.port);
+  server.listen(config.port, function () {
+    console.error('   app listening on http://localhost:' + config.port);
   });
 
   process.on('uncaughtException', function (e) {
